@@ -1,6 +1,6 @@
 package com.donzelitos.multtenancy.configuration;
 
-import com.donzelitos.multtenancy.configuration.model.Instance;
+import com.donzelitos.multtenancy.model.Instance;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
@@ -11,6 +11,7 @@ public class RequestContext {
 
     private static final ThreadLocal<Owner> contextOwner = new ThreadLocal<>();
     private static final ThreadLocal<Instance> contextInstance = new ThreadLocal<>();
+    private static final ThreadLocal<String> testOwnerString = new ThreadLocal<>();
     private static final ThreadLocal<Long> localeThreadLocal = new ThreadLocal<>();
     private static final ThreadLocal<String> tokenThreadLocal = new ThreadLocal<>();
 
@@ -50,6 +51,14 @@ public class RequestContext {
         contextInstance.set(instance);
     }
 
+    public static void setTestOwnerString(String s) {
+        testOwnerString.set(s);
+    }
+
+    public static String getTestOwner() {
+        return testOwnerString.get();
+    }
+
     public static Instance getCurrentInstance() {
         return contextInstance.get();
     }
@@ -77,7 +86,8 @@ public class RequestContext {
     public static void setDefaultOwner() {
         contextOwner.set(new Owner(defaultOwnerName));
     }
-    public static void setDefaultInstancex(){
+
+    public static void setDefaultInstancex() {
         contextInstance.set(new Instance(defaultInstance, defaultUrl));
     }
 
@@ -99,6 +109,7 @@ public class RequestContext {
     public static void setDefaultInstanceName(String defaultInstance) {
         RequestContext.defaultInstance = defaultInstance;
     }
+
     public static void setDefaultUrl(String defaultUrl) {
         RequestContext.defaultUrl = defaultUrl;
     }

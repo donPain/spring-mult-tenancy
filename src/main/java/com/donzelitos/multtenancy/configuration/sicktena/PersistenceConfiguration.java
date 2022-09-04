@@ -1,8 +1,7 @@
 package com.donzelitos.multtenancy.configuration.sicktena;
 
-import com.solinftec.preregistrationapi.configuration.exception.SolinftecDefaultException;
-import com.solinftec.preregistrationapi.service.owner.OwnerService;
-import com.solinftec.preregistrationapi.utils.CryptographyTripleDES;
+import com.donzelitos.multtenancy.configuration.exception.SolinftecDefaultException;
+import com.donzelitos.multtenancy.model.Instance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -11,12 +10,9 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import javax.crypto.NoSuchPaddingException;
 import javax.sql.DataSource;
-import java.io.UnsupportedEncodingException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,11 +22,13 @@ import java.util.Map;
 public class PersistenceConfiguration {
 
     @Autowired
-    private OwnerService ownerService;
-    @Autowired
     private FactoryConnection factoryConnection;
     @Value("${default.connection.username}")
     private String defaultConnectionUser;
+    @Value("${instancias.primary}")
+    private String primaryInstanceUrl;
+    @Value("${instancias.secondary}")
+    private String secondaryInstanceUrl;
 
     @Primary
     @Bean(name = "dataSource")
@@ -46,7 +44,11 @@ public class PersistenceConfiguration {
 
     private Map<Object, Object> getInstances() {
         Map<Object, Object> targetDataSources = new HashMap<>();
-        ownerService.getAllInstances().forEach(instance -> {
+        var instance1 = new Instance("PRIMARY", primaryInstanceUrl);
+        var instance2 = new Instance("SECONDARY", secondaryInstanceUrl);
+        var instances = new ArrayList<>(Arrays.asList(instance1, instance2));
+
+        instances.forEach(instance -> {
             try {
                 var dataSource = factoryConnection.getConnection(instance);
                 targetDataSources.put(instance.getName(), dataSource);
@@ -55,11 +57,6 @@ public class PersistenceConfiguration {
             }
         });
         return targetDataSources;
-    }
-
-    @Bean
-    CryptographyTripleDES cryptographyUtils() throws InvalidKeySpecException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException {
-        return CryptographyTripleDES.newInstance();
     }
 }
 

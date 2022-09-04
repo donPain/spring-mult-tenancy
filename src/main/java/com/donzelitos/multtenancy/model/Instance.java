@@ -1,4 +1,4 @@
-package com.donzelitos.multtenancy.configuration.model;
+package com.donzelitos.multtenancy.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

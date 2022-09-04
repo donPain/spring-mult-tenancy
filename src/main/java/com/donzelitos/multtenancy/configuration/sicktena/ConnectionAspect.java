@@ -18,12 +18,9 @@ public class ConnectionAspect {
     @Around("execution(java.sql.Connection javax.sql.DataSource.getConnection(..))")
     public Connection prepare(ProceedingJoinPoint pjp) throws Exception {
         if (pjp.getTarget() != null && pjp.getTarget() instanceof MultiRoutingDataSource ds) {
-            RequestContext.owner();
             try  {
                 Connection conn = ds.getResolvedDataSources().get(RequestContext.getCurrentInstance().getName()).getConnection();
-                if (RequestContext.owner() != null) {
-                    conn.setSchema("PRE_CADASTRO_DEV");
-                }
+                conn.setSchema(RequestContext.getTestOwner());
                 return conn;
             } catch (Exception e) {
                 ds.getResolvedDataSources().get(RequestContext.getCurrentInstance()).getConnection().close();

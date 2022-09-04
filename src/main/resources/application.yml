@@ -11,7 +11,7 @@ spring:
         temp.use_jdbc_metadata_defaults: false
 
     open-in-view: false
-    show-sql: false
+    show-sql: true
     hibernate:
       naming:
         physical-strategy: com.donzelitos.multtenancy.configuration.CustomDatabaseIdentifierNamingStrategy
@@ -22,6 +22,15 @@ spring:
     multipart:
       max-file-size: 100MB
       max-request-size: 100MB
+default:
+  connection:
+    url: jdbc:oracle:thin:@(description=(address=(host=localhost)(protocol=tcp)(port=49161))(connect_data=(sid=xe)(server=SHARED)))
+    username: ${DB_USER:PRE_CADASTRO}
+    password: ${DB_PASSWORD:444}
+    instance: SLFPRDOBC
+instancias:
+  primary: jdbc:oracle:thin:@(description=(address=(host=localhost)(protocol=tcp)(port=49161))(connect_data=(sid=xe)(server=SHARED)))
+  secondary: jdbc:oracle:thin:@(description=(address=(host=localhost)(protocol=tcp)(port=49162))(connect_data=(sid=xe)(server=SHARED)))
 
   datasource:
     initialize: false
