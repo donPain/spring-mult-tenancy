@@ -1,0 +1,45 @@
+server:
+  port: 4212
+
+spring:
+  profiles:
+    active: ${PROFILE_ACTIVE:development}
+  jpa:
+    properties:
+      hibernate:
+        enable_lazy_load_no_trans: true
+        temp.use_jdbc_metadata_defaults: false
+
+    open-in-view: false
+    show-sql: false
+    hibernate:
+      naming:
+        physical-strategy: com.donzelitos.multtenancy.configuration.CustomDatabaseIdentifierNamingStrategy
+      ddl-auto: none
+    database: oracle
+    database-platform: org.hibernate.dialect.Oracle10gDialect
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+
+  datasource:
+    initialize: false
+    hikari:
+      minimumIdle: 2
+      maximumPoolSize: 10
+      idleTimeout: 120000
+      connectionTimeout: 300000
+      leakDetectionThreshold: 300000
+
+logging.level:
+  # Uncomment for extensive SQL logging
+  org.hibernate.SQL: DEBUG
+  org.hibernate.search.massindexing: INFO
+  org.hibernate.search.query: TRACE
+  org:
+    hibernate:
+      type:
+        descriptor:
+          sql:
+            BasicBinder: TRACE
